@@ -45,7 +45,7 @@ Cómo primera medida es necesaria la implementacion de los siguientes módulos y
  
  ## Inicialización de la SDK
  
-**En el método `onCreate ()` de su `Activity` en su aplicación, inicialice Become para la captura de imágenes, se debe asignar el `ItFirstTransaction` como True, puedes utilizar el siguiente fragmento de código:**
+**En el método `onCreate ()` de su `Activity` en su aplicación, inicialice Become para la captura de imágenes, puedes utilizar el siguiente fragmento de código:**
 
 	public class MainActivity extends AppCompatActivity {
     
@@ -54,47 +54,22 @@ Cómo primera medida es necesaria la implementacion de los siguientes módulos y
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	    super.onCreate (savedInstanceState);
-	    setContentView (R.layout.activity_main);
+		super.onCreate (savedInstanceState);
+		setContentView (R.layout.activity_main);
 
-        //Parámetros de configuración: El valor de los parámetros debe ser solicitado al contratar el servicio
-        String token =  "your bearer token here" ;  
-        String contractId =  "your contract ID here";
-        String userId = "your user ID here"
+		//Parámetros de configuración: El valor de los parámetros debe ser solicitado al contratar el servicio
+		String token =  "your bearer token here" ;  
+		String contractId =  "your contract ID here";
+		String userId = "your user ID here"
 	
-        //Instancia para iniciar la interfaz
-      BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
-                    new BDIVConfig(true,
-                            token,
-                            contractId,
-                            userId));
-	  }
+		//Instancia para iniciar la interfaz
+		BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
+		    new BDIVConfig(token,
+			    contractId,
+			    userId));
+		}
 	}
 	
-En el método `secondAction ()` de su `Activity` de aplicación, inicialice Become y proceda al el envío de la imagen del documento para su posterior validación, se debe asignar el `ItFirstTransaction` como False, Y el parámetro imagen debe estar cargado con la información de la imagen completa por el anverso del documento, puedes utilizar el siguiente fragmento de código:**
-
-Nota: para obtener información de la registraduría nacional de Colombia, se requiere se adicione el parámetro `documentNumber`, el cual es retornado por el primer llamado a la SDK. 
- 
-        //Parámetros de configuración: El valor de los parámetros debe ser solicitado al contratar el servicio
-	
-	String token =  "your bearer token here" ;  
-	String contractId =  "your contract ID here";
-	String userId = "your user ID here"
-	String frontImagePath = "Image path, returned by the first event"
-  
-	BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
-	 new BDIVConfig(false,
-                        token,
-                        contractId,
-                        userId,
-                        glovalresponseIV.getDocumentNumber(),
-                        glovalresponseIV.getIsoAlpha2CountryCode(),
-                        glovalresponseIV.getTypeOrdinal(),
-                        glovalresponseIV.getFullFronImagePath(),
-                        glovalresponseIV.getBackImagePath(),
-                        glovalresponseIV.getBarcodeResult()
-        ));
-		
 ## Cambiar textos predeterminados en la SDK     
 	
 Para cambiar algún texto predeterminado y asignar uno en reemplazo de este, cree una carpeta ejemplo: `values-es` en su proyecto y coloque la copia de `strings.xml` dentro. agrege la eqtiqueta del texto a remplazar ejemplo: `<string name="mb_blinkid_front_instructions">Escanea la parte frontal\ndel documento</string>`.
@@ -163,7 +138,6 @@ Parámetro | Valor
 ------------ | -------------
 contractId | String
 userId  | String
-ItFirstTransaction  | Bool
 
 
 Mostrará el siguiente error por consola:
@@ -187,215 +161,23 @@ En este apartado encontrará la respuesta a partir de la validación del proceso
    
 **3. Estructura encargada de la definición del estado  de validación ***error*** , este estado se presenta cuándo ocurren errores generales o de inicialización de parámetros :**
 
-	 @Override  
-	 public void onError(LoginError pLoginError) {
-	 }
+	@Override  
+	public void onError(LoginError pLoginError) {
+	}
 
-## Estructura para el retorno de la información
-Los siguientes son los parámetros que permiten el retorno de la información capturada por el sistema.
-
-    private String firstName;
-    private String lastName;
-    private String documentNumber;
-    private String dateOfExpiry;
-    private Integer age;
-    private String dateOfBirth;
-    private String placeOfBirth;
-    private String dateOfIssue;
-    private String mrzText;
-    private String sex;
-    private String barcodeResult;
-    private byte[] barcodeResultData;
-    private String isoAlpha2CountryCode;
-    private String isoAlpha3CountryCode;
-    private String isoNumericCountryCode;
-    private String countryName;
-    private String type;
-    private Integer typeOrdinal;
-    private String frontImagePath;
-    private String backImagePath;
-    private String fullFronImagePath;
-    private String fullBackImagePath;
-    private String faceImagePath;
-    private String documentValidation;
-    private String registryInformation;
-    private Integer responseStatus;
-    private String message;
-    private Boolean IsFirstTransaction;
-    
 Ejemplo de la respuesta:
 
-	        @Override
-                public void onSuccess(final ResponseIV responseIV) {
-                    runOnUiThread(() -> {
-                        if (responseIV.getFullFronImagePath() != null) {
-                            File imgFileFullFront = new File(responseIV.getFullFronImagePath());
-                            if (imgFileFullFront.exists()) {
-                                fullFronImagePath = responseIV.getFullFronImagePath();
-                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFileFullFront.getAbsolutePath());
-                                imgFrontFull.setImageBitmap(myBitmap);
-                            }
-                        }
-                        if (responseIV.getFrontImagePath() != null) {
-                            File imgFile = new File(responseIV.getFrontImagePath());
-                            if (imgFile.exists()) {
-                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                                imgFront.setImageBitmap(myBitmap);
-                            }
-                        }
-                        if (responseIV.getBackImagePath() != null) {
-                            File imgFile = new File(responseIV.getBackImagePath());
-                            if (imgFile.exists()) {
-                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                                imgBack.setImageBitmap(myBitmap);
-                            }
-                        }
-                        if (responseIV.getFullBackImagePath() != null) {
-                            File imgFile = new File(responseIV.getFullBackImagePath());
-                            if (imgFile.exists()) {
-                                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                                imgBackFull.setImageBitmap(myBitmap);
-                            }
-                        }
-                        textResponse.setText(responseIV.toString());
-                    });
-                }
-		
-## Implementación del proceso
-Esta sección se encarga de proporcionar el fragmento de código para la implementación final del proceso.
-
-	
-        public class MainActivity extends AppCompatActivity {
-	    private final BecomeCallBackManager mCallbackManager = BecomeCallBackManager.createNew();
-	    private String contractId = "";
-	    private String token = "";
-	    private String userId = "";
-	    private TextView textResponse;
-	    private String fullFronImagePath = "";
-	    private TextView textValidation;
-
-	    @SuppressLint("WrongThread")
-	    @Override
-	    protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		textResponse = findViewById(R.id.textReponse);
-		textValidation = findViewById(R.id.textDocumentValidation);
-		EditText textContractId = findViewById(R.id.ContractIdText);
-		EditText textToken = findViewById(R.id.textToken);
-		ImageView imgFront = findViewById(R.id.imgFront);
-		ImageView imgFrontFull = findViewById(R.id.imgFrontFull);
-		ImageView imgBack = findViewById(R.id.imgBack);
-		ImageView imgBackFull = findViewById(R.id.imgBackFull);
-		Button btnAut = findViewById(R.id.btnAuth);
-		Button btnSecond = findViewById(R.id.btnSecond);
-
-		btnSecond.setOnClickListener(view -> {
-		    textValidation.setText("Enviando segunda petición...");
-		    secondTransacion(fullFronImagePath);
-		});
-		btnAut.setOnClickListener(view -> {
-		    textValidation.setText("");
-		    token = textToken.getText().toString();
-		    contractId = textContractId.getText().toString().isEmpty() ? "2" : textContractId.getText().toString();
-		    Date currentTime = Calendar.getInstance().getTime();
-		    SimpleDateFormat format1 = new SimpleDateFormat("yyyyMMddHHmmssSSS", Locale.getDefault());
-		    userId = format1.format(currentTime);
-
-		    BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
-			    new BDIVConfig(true,
-				    token,
-				    contractId,
-				    userId));
-
-		    BecomeResponseManager.getInstance().registerCallback(mCallbackManager, new BecomeInterfaseCallback() {
-			@Override
-			public void onSuccess(final ResponseIV responseIV) {
-			    runOnUiThread(() -> {
-				if (responseIV.getFullFronImagePath() != null) {
-				    File imgFileFullFront = new File(responseIV.getFullFronImagePath());
-				    if (imgFileFullFront.exists()) {
-					fullFronImagePath = responseIV.getFullFronImagePath();
-					Bitmap myBitmap = BitmapFactory.decodeFile(imgFileFullFront.getAbsolutePath());
-					imgFrontFull.setImageBitmap(myBitmap);
-				    }
-				}
-				if (responseIV.getFrontImagePath() != null) {
-				    File imgFile = new File(responseIV.getFrontImagePath());
-				    if (imgFile.exists()) {
-					Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-					imgFront.setImageBitmap(myBitmap);
-				    }
-				}
-				if (responseIV.getBackImagePath() != null) {
-				    File imgFile = new File(responseIV.getBackImagePath());
-				    if (imgFile.exists()) {
-					Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-					imgBack.setImageBitmap(myBitmap);
-				    }
-				}
-				if (responseIV.getFullBackImagePath() != null) {
-				    File imgFile = new File(responseIV.getFullBackImagePath());
-				    if (imgFile.exists()) {
-					Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-					imgBackFull.setImageBitmap(myBitmap);
-				    }
-				}
-				textResponse.setText(responseIV.toString());
-			    });
-			}
-
-			@Override
-			public void onCancel() {
-			    textResponse.setText("Cancelado por el usuario ");
-
-			}
-
-			@Override
-			public void onError(LoginError pLoginError) {
-			    textResponse.setText(pLoginError.getMessage());
-			}
-
-		    });
-		});
-
-	    }
-
-	    private void secondTransacion(String frontImagePath) {
-
-		BecomeResponseManager.getInstance().startAutentication(MainActivity.this,
-			new BDIVConfig(false,
-				token,
-				contractId,
-				userId,
-				frontImagePath
-			));
-
-		BecomeResponseManager.getInstance().registerCallback(mCallbackManager, new BecomeInterfaseCallback() {
-		    @Override
-		    public void onSuccess(final ResponseIV responseIV) {
-			runOnUiThread(() -> {
-			    textValidation.setText(responseIV.getDocumentValidation());
-			});
-		    }
-
-		    @Override
-		    public void onCancel() {
-			runOnUiThread(() -> {
-			    textValidation.setText("Cancelado por el usuario ");
-			});
-		    }
-
-		    @Override
-		    public void onError(LoginError pLoginError) {
-			runOnUiThread(() -> {
-			    textValidation.setText(pLoginError.getMessage());
-			});
-		    }
-
-		});
-	    }
+	@Override
+	public void onSuccess(final ResponseIV responseIV) {
+	    runOnUiThread(() -> {
+		String fullname = responseIV.getResult().getFirstName();
+		String birth = responseIV.getResult().getDateOfBirth().getOriginalDateString();
+		String document_type = responseIV.getResult().getClassInfo().getType().toString();
+		String document_number = responseIV.getResult().getDocumentNumber();
+		if (responseIV.getResult().getFaceImage() != null) {
+		   img_user.setImageBitmap (responseIV.getResult().getFaceImage().convertToBitmap());
+		}
+	    });
 	}
 
 
